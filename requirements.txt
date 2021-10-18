@@ -1,0 +1,10 @@
+aiodns>=3.0.0
+aiohttp-jinja2==1.5
+git+https://github.com/phenobarbital/aiohttp-session
+aiohttp>=3.7.4post0
+asyncpg>=0.24.0
+cchardet>=2.1.7
+Jinja2>=3.0.1
+setproctitle>=1.2.2
+setuptools>=58.1.0
+wheel>=0.37.0

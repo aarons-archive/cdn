@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Life - Home{% endblock title %}
+{% block description %}Home page{% endblock description %}
+
+{% block inner_content %}
+
+<div class="jumbotron p-3">
+    <div class="container-fluid text-center">
+        <img class="img-fluid" src="{{ static('resources/AxelWeb1000x300.png') }}" alt="AxelWeb">
+        <h5>Coming soon:tm:</h5>
+    </div>
+</div>
+
+<div class="container text-center p-3">
+
+    {% if not token %}
+        <div class="card shadow m-1">
+            <div class="card-body">
+
+                <form action="/api/login" method="post" accept-charset="utf-8" enctype="application/x-www-form-urlencoded">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input id="username" type="text" name="username" placeholder="Username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input id="password" type="password" name="password" placeholder="Password" class="form-control" required>
+                    </div>
+                    <input type="submit" class="btn btn-block">
+                </form>
+
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow m-1">
+            <div class="card-body">
+                <p class="card-text">Logged in as {{ username }}, your id is {{ id }}.</p>
+                <form action="/api/logout" method="post" accept-charset="utf-8">
+                    <input type="submit" class="btn btn-block" value="Logout">
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock inner_content %}

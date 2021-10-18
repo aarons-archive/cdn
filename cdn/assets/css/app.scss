@@ -1,0 +1,115 @@
+/////////////////////////////////
+// Required bootstrap imports //
+///////////////////////////////
+
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/utilities";
+
+
+//////////////////////////////////
+// Boostrap variable overrides //
+////////////////////////////////
+
+// NONE
+
+
+/////////////////////////////
+// Other boostrap imports //
+///////////////////////////
+
+@import "../node_modules/bootstrap/scss/root";
+@import "../node_modules/bootstrap/scss/reboot";
+@import "../node_modules/bootstrap/scss/type";
+@import "../node_modules/bootstrap/scss/images";
+@import "../node_modules/bootstrap/scss/containers";
+@import "../node_modules/bootstrap/scss/grid";
+@import "../node_modules/bootstrap/scss/forms";
+@import "../node_modules/bootstrap/scss/buttons";
+@import "../node_modules/bootstrap/scss/transitions";
+@import "../node_modules/bootstrap/scss/dropdown";
+@import "../node_modules/bootstrap/scss/button-group";
+@import "../node_modules/bootstrap/scss/nav";
+@import "../node_modules/bootstrap/scss/navbar";
+@import "../node_modules/bootstrap/scss/card";
+@import "../node_modules/bootstrap/scss/close";
+@import "../node_modules/bootstrap/scss/toasts";
+@import "../node_modules/bootstrap/scss/helpers";
+@import "../node_modules/bootstrap/scss/utilities/api";
+
+/* Colour vars */
+:root {
+
+    --light-blue:   #19CBAA;
+    --blue:         #118C75;
+    --dark-blue:    #0A5446;
+
+    --light-red:    #CB1939;
+    --red:          #8C1127;
+    --dark-red:     #700E1F;
+
+    --orange-brown: #A66F2D;
+    --brown:        #73441A;
+    --peach:        #F2B199;
+
+    --light-white:  #F2E8DC;
+    --white:        #ECEBF3;
+    --pure-white:   #FFFFFF;
+
+    --text-black:   #000000;
+    --text-white:   #FFFFFF;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--red);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--light-red);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-red);
+}
+
+body {
+    background-color: var(--red);
+    color: var(--text-white);
+}
+
+/* Boostrap navbars */
+.navbar {
+  background: var(--light-red);
+    color: var(--text-black)
+}
+
+/* Boostrap jumbotrons */
+.jumbotron {
+    background: var(--light-red);
+    color: var(--text-black)
+}
+
+/* Boostrap buttons */
+.btn {
+    background-color: var(--blue);
+    color: var(--text-black);
+}
+
+/* Boostrap cards */
+.card {
+    background: var(--dark-red);
+    color: var(--text-black);
+
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    -o-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+}
+
+.card:hover,
+.card:focus {
+    transform: translate(-3px, -3px);
+}
