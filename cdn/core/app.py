@@ -8,8 +8,10 @@ import logging
 import aiohttp
 import aiohttp.client
 import aiohttp.web
+import aiohttp_session
 import aioredis
 import asyncpg
+from aiohttp_session import redis_storage
 
 # My stuff
 from core import config
@@ -57,34 +59,39 @@ class CDN(aiohttp.web.Application):
             __log__.info("[REDIS] Successful connection.")
             self.redis = redis
 
-        accounts = await self.db.fetch("SELECT * FROM accounts")
-
-        for account in accounts:
-            self.accounts[account["id"]] = objects.Account(app=self, data=account)
-        __log__.info(f"[ACCOUNTS] Loaded accounts [{len(accounts)} accounts]")
-
-        files = await self.db.fetch("SELECT * FROM files")
-
-        for file in files:
-            account = self.accounts[file["account_id"]]
-            account._files[file["identifier"]] = objects.File(app=self, account=account, data=file)
-
-        __log__.info(f"[FILES] Loaded files [{len(files)} files]")
+        aiohttp_session.setup(
+            app=self,
+            storage=redis_storage.RedisStorage(redis)
+        )
 
     #
 
-    def get_account_by_id(self, id: int) -> objects.Account | None:
-        return self.accounts.get(id)
+    async def fetch_account(
+        self,
+        session: aiohttp_session.Session,
+        /
+    ) -> objects.Account | None:
 
-    def get_account_by_token(self, token: str) -> objects.Account | None:
-
-        if not token:
+        if not (data := await self.db.fetch("SELECT * FROM accounts WHERE token = $1", session.get("token"))):
             return None
 
-        if not (accounts := [account for account in self.accounts.values() if account.token == token]):
-            return None
+        session["account"] = data
+        return objects.Account(data)
 
-        return accounts[0]
+    async def get_account(
+        self,
+        session: aiohttp_session.Session,
+        /
+    ) -> objects.Account | None:
+
+        if not (data := session.get("account")):
+            return await self.fetch_account(session)
+
+        account = objects.Account(data)
+        if account.is_expired():
+            account = await self.fetch_account(session)
+
+        return account
 
     #
 

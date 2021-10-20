@@ -58,7 +58,7 @@ module.exports = (env, options) => {
             new CopyWebpackPlugin({
                 patterns: [
                     {
-                        from: 'resources/',
+                        from: 'images/',
                         to:   '../images',
                     },
                 ],

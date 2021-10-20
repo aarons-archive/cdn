@@ -29,7 +29,7 @@ class Pages:
         if token is None:
             return None
 
-        account = await request.app.get_account_by_token(token=token)
+        account = request.app.get_account_by_token(token=token)
         return account.info
 
     @aiohttp_jinja2.template('media.html')

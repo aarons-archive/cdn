@@ -42,7 +42,7 @@ class App:
         if not account_data:
             return aiohttp.web.json_response({'error': f'An account with that username and password combination was not found.'}, status=401)
 
-        account = objects.Account(data=dict(account_data))
+        account = objects.Account(data=dict(account_data), app=request.app)
 
         response = aiohttp.web.HTTPFound('/home')
         response.set_cookie('token', account.token, max_age=1209600, samesite='Strict')
