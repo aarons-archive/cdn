@@ -16,20 +16,20 @@ if TYPE_CHECKING:
 
 class File:
 
-    __slots__ = '_app', '_account', '_account_id', '_identifier', '_format', '_created_at'
+    __slots__ = "_app", "_account", "_account_id", "_identifier", "_format", "_created_at"
 
     def __init__(self, app: AxelWeb, account: objects.Account, data: dict) -> None:
 
         self._app: AxelWeb = app
         self._account: objects.Account = account
 
-        self._account_id: int = data.get('account_id')
-        self._identifier: str = data.get('identifier')
-        self._format: str = data.get('format')
-        self._created_at: datetime.datetime = data.get('created_at')
+        self._account_id: int = data.get("account_id")
+        self._identifier: str = data.get("identifier")
+        self._format: str = data.get("format")
+        self._created_at: datetime.datetime = data.get("created_at")
 
     def __repr__(self) -> str:
-        return f'<axelweb.File identifier=\'{self.identifier}\' format\'{self.format}\' account={self.account}>'
+        return f"<axelweb.File identifier={self.identifier} format={self.format} account={self.account}>"
 
     # Properties
 
@@ -61,4 +61,4 @@ class File:
 
     @property
     def filename(self) -> str:
-        return f'{self.identifier}.{self.format}'
+        return f"{self.identifier}.{self.format}"

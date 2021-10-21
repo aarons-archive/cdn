@@ -22,22 +22,22 @@ import aiohttp_jinja2
 
 class Pages:
 
-    @aiohttp_jinja2.template('index.html')
+    @aiohttp_jinja2.template("index.html")
     async def get_home(self, request: aiohttp.web.Request) -> typing.Optional[dict]:
 
-        token = request.cookies.get('token')
+        token = request.cookies.get("token")
         if token is None:
             return None
 
         account = request.app.get_account_by_token(token=token)
         return account.info
 
-    @aiohttp_jinja2.template('media.html')
+    @aiohttp_jinja2.template("media.html")
     async def get_media(self, request: aiohttp.web.Request) -> typing.Union[aiohttp.web.HTTPFound, typing.Optional[dict]]:
 
-        token = request.cookies.get('token')
+        token = request.cookies.get("token")
         if token is None:
-            return aiohttp.web.HTTPFound('/home')
+            return aiohttp.web.HTTPFound("/home")
 
         account = await request.app.get_account(token=token)
 
@@ -45,28 +45,28 @@ class Pages:
         if not files:
             return None
 
-        return {'images': [file.info for file in files], **account.info}
+        return {"images": [file.info for file in files], **account.info}
 
-    @aiohttp_jinja2.template('account.html')
+    @aiohttp_jinja2.template("account.html")
     async def get_account(self, request: aiohttp.web.Request) -> typing.Union[aiohttp.web.HTTPFound, typing.Optional[dict]]:
 
-        token = request.cookies.get('token')
+        token = request.cookies.get("token")
         if token is None:
-            return aiohttp.web.HTTPFound('/home')
+            return aiohttp.web.HTTPFound("/home")
 
         account = await request.app.get_account(token=token)
         return account.info
 
     async def get_github(self, request: aiohttp.web.Request) -> aiohttp.web.HTTPFound:
-        return aiohttp.web.HTTPFound('https://github.com/Axelancerr/AxelWeb')
+        return aiohttp.web.HTTPFound("https://github.com/Axelancerr/AxelWeb")
 
 
 def setup(app: aiohttp.web.Application):
     pages = Pages()
 
     app.add_routes([
-        aiohttp.web.get(r'/home', pages.get_home),
-        aiohttp.web.get(r'/home/media', pages.get_media),
-        aiohttp.web.get(r'/home/account', pages.get_account),
-        aiohttp.web.get(r'/home/github', pages.get_github),
+        aiohttp.web.get(r"/home", pages.get_home),
+        aiohttp.web.get(r"/home/media", pages.get_media),
+        aiohttp.web.get(r"/home/account", pages.get_account),
+        aiohttp.web.get(r"/home/github", pages.get_github),
     ])

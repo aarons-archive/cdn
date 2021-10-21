@@ -10,25 +10,21 @@ from utilities import enums, objects
 
 class Account:
 
-    def __init__(
-        self,
-        data: dict,
-        /
-    ) -> None:
+    def __init__(self, data: dict, /) -> None:
 
-        self._id: int = data['id']
-        self._username: str = data.get('username')
-        self._token: str = data.get('token')
-        self._bot: bool = data.get('bot')
-        self._email: str = data.get('email')
-        self._password: str = data.get('password')
-        self._created_at: datetime.datetime = data.get('created_at')
-        self._type: enums.AccountType = enums.AccountType(data.get('type'))
+        self._id: int = data["id"]
+        self._username: str = data["username"]
+        self._token: str = data["token"]
+        self._bot: bool = data["bot"]
+        self._email: str = data["email"]
+        self._password: str = data["password"]
+        self._created_at: datetime.datetime = data.get("created_at")
+        self._type: enums.AccountType = enums.AccountType(data.get("type"))
 
         self._files: dict[str, objects.File] = {}
 
     def __repr__(self) -> str:
-        return f'<axelweb.Account id=\'{self.id}\' username=\'{self.username}\' bot={self.bot}>'
+        return f"<cdn.Account id='{self.id}' username='{self.username}' bot={self.bot}>"
 
     # Properties
 
@@ -75,12 +71,12 @@ class Account:
     @property
     def partial_info(self) -> dict:
         return {
-            'id':       self.id,
-            'username': self.username,
-            'bot':      self.bot,
-            'created_at': self.created_at.isoformat()
+            "id":       self.id,
+            "username": self.username,
+            "bot":      self.bot,
+            "created_at": self.created_at.isoformat()
         }
 
     @property
     def info(self) -> dict:
-        return self.partial_info | {'token': self.token, 'email': self.email}
+        return self.partial_info | {"token": self.token, "email": self.email}

@@ -77,14 +77,14 @@ def logger() -> Any:
         [log.handlers[0].close() for log in loggers.values()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    setproctitle.setproctitle('cdn')
+    setproctitle.setproctitle("cdn")
 
     try:
         # Packages
         import uvloop
-        if sys.platform != 'win32':
+        if sys.platform != "win32":
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     except ImportError:
         uvloop = None
