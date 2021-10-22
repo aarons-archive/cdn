@@ -49,7 +49,7 @@ async def login(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Re
 
     if not account:
         return aiohttp.web.json_response(
-            {"error": "An account with that username and password combination was not found."},
+            {"error": "An accounts with that username and password combination was not found."},
             status=401
         )
 
@@ -58,4 +58,4 @@ async def login(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Re
 
 
 def setup(app: aiohttp.web.Application) -> None:
-    app.add_routes([aiohttp.web.post(r"/api/account/login", login)])  # type: ignore
+    app.add_routes([aiohttp.web.post(r"/api/accounts/login", login)])  # type: ignore

@@ -23,4 +23,4 @@ async def logout(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.R
 
 
 def setup(app: aiohttp.web.Application) -> None:
-    app.add_routes([aiohttp.web.post(r"/api/account/logout", logout)])  # type: ignore
+    app.add_routes([aiohttp.web.get(r"/logout", logout)])  # type: ignore

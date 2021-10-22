@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}cdn • login{% endblock title %}
+{% block description %}cdn login page{% endblock description %}
+
+{% block content %}
+
+<div class="container">
+    <div class="container mt-3 text-center">
+
+        <div class="card shadow m-1">
+            <div class="card-body">
+
+                <form action="/api/accounts/login" method="post" accept-charset="utf-8" enctype="application/x-www-form-urlencoded">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input id="username" type="text" name="username" placeholder="Username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input id="password" type="password" name="password" placeholder="Password" class="form-control" required>
+                    </div>
+                    <input type="submit" class="btn btn-block">
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}

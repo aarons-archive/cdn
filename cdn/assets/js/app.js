@@ -1,8 +1,8 @@
+import 'bootstrap';
 import imagesLoaded from 'imagesloaded';
-
 import Masonry from 'masonry-layout';
-import '../css/app.scss';
 
+import '../css/app.scss';
 
 // Masonry
 const masonryGrids = document.querySelectorAll('.masonry');

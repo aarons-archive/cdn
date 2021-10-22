@@ -48,3 +48,16 @@ class File:
     @property
     def filename(self) -> str:
         return f"{self.identifier}.{self.format}"
+
+    #
+
+    @property
+    def info(self) -> dict[str, Any]:
+        return {
+            "account_id": self.account_id,
+            "identifier": self.identifier,
+            "format":     self.format,
+            "created_at": self.created_at.isoformat(),
+            "private":    self.private,
+            "filename":   self.filename
+        }

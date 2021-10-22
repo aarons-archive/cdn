@@ -1,47 +1,25 @@
 {% extends "base.html" %}
-{% block title %}cdn - home{% endblock title %}
-{% block description %}Home page{% endblock description %}
 
-{% block inner_content %}
+{% block title %}cdn • home{% endblock title %}
+{% block description %}cdn home page{% endblock description %}
 
-<div class="jumbotron p-3">
-    <div class="container-fluid text-center">
-        <img class="img-fluid" src="{{ static('/images/logo1000x300.png') }}" alt="AxelWeb">
+{% block content %}
+
+<div class="container">
+    <div class="container mt-3 text-center">
+
+        {% if account %}
+            <div class="card shadow m-1">
+                <div class="card-body">
+                    <p class="card-text">Logged in as {{ account.username }}, your id is {{ account.id }}.</p>
+                    <form>
+                        <button class="btn btn-light" type="submit" formaction="/logout">Logout</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
 </div>
 
-<div class="container text-center p-3">
-
-    {% if not token %}
-        <div class="card shadow m-1">
-            <div class="card-body">
-
-                <form action="/api/account/login" method="post" accept-charset="utf-8" enctype="application/x-www-form-urlencoded">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input id="username" type="text" name="username" placeholder="Username" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input id="password" type="password" name="password" placeholder="Password" class="form-control" required>
-                    </div>
-                    <input type="submit" class="btn btn-block">
-                </form>
-
-            </div>
-        </div>
-
-    {% else %}
-        <div class="card shadow m-1">
-            <div class="card-body">
-                <p class="card-text">Logged in as {{ username }}, your id is {{ id }}.</p>
-                <form action="/api/account/logout" method="post" accept-charset="utf-8">
-                    <input type="submit" class="btn btn-block" value="Logout">
-                </form>
-            </div>
-        </div>
-    {% endif %}
-
-</div>
-
-{% endblock inner_content %}
+{% endblock content %}

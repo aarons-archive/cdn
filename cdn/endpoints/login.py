@@ -13,18 +13,17 @@ import aiohttp_session
 from core.app import CDN
 
 
-@aiohttp_jinja2.template("index.html")  # type: ignore
-async def index(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+@aiohttp_jinja2.template("login.html")  # type: ignore
+async def login(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
 
     session = await aiohttp_session.get_session(request)
     app: CDN = request.app  # type: ignore
 
-    account = await app.get_account(session)
+    if (await app.get_account(session)) is not None:
+        return aiohttp.web.HTTPFound("/")
 
-    return {
-        "account": account.info if account else None
-    }
+    return None
 
 
 def setup(app: aiohttp.web.Application) -> None:
-    app.add_routes([aiohttp.web.get(r"/", index)])  # type: ignore
+    app.add_routes([aiohttp.web.get(r"/login", login)])  # type: ignore

@@ -76,9 +76,20 @@ class CDN(aiohttp.web.Application):
             return None
 
         account = objects.Account(data)
-        session["account"] = account.info
+        session["accounts"] = account.info
 
         return account
+
+    async def fetch_account_by_token(
+        self,
+        token: str,
+        /
+    ) -> objects.Account | None:
+
+        if not (data := await self.db.fetchrow("SELECT * FROM accounts WHERE token = $1", token)):
+            return None
+
+        return objects.Account(data)
 
     async def get_account(
         self,
@@ -89,7 +100,7 @@ class CDN(aiohttp.web.Application):
         if not session.get("token"):
             return None
 
-        if not (data := session.get("account")):
+        if not (data := session.get("accounts")):
             return await self.fetch_account(session)
 
         account = objects.Account(data)
@@ -98,23 +109,16 @@ class CDN(aiohttp.web.Application):
 
         return account
 
-    #
+    async def get_files(
+        self,
+        session: aiohttp_session.Session,
+        /
+    ) -> list[objects.File] | None:
 
-    async def get_file(self, *, identifier: str) -> objects.File | None:
-
-        if identifier is None:
+        if not (account := await self.get_account(session)):
             return None
 
-        file_data = await self.db.fetchrow("SELECT * FROM files WHERE identifier = $1", identifier)
-        if not file_data:
+        if not (files := await self.db.fetch("SELECT * FROM files WHERE account_id = $1 ORDER BY created_at DESC", account.id)):
             return None
 
-        return objects.File(data=dict(file_data))
-
-    async def get_account_files(self, account_id: int) -> list[objects.File] | None:
-
-        files = await self.db.fetch("SELECT * FROM files WHERE account_id = $1 ORDER BY created_at DESC", account_id)
-        if not files:
-            return None
-
-        return [objects.File(data=dict(file)) for file in files]
+        return [objects.File(file) for file in files]

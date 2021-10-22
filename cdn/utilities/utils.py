@@ -6,8 +6,12 @@ import datetime as dt
 from typing import Any, Literal
 
 # Packages
+import aiohttp.web
 import humanize
 import pendulum
+
+# My stuff
+from utilities import exceptions
 
 
 def convert_datetime(
@@ -95,3 +99,14 @@ class _MissingSentinel:
 
 
 MISSING: Any = _MissingSentinel()
+
+
+def get_body_field(body: dict[str, Any], name: str) -> aiohttp.web.Response | Any:
+
+    if field := body.get(name) is not None:
+        return field
+
+    raise exceptions.MissingFieldError(
+        message=f"request body must have the '{name}' field.",
+        status=400
+    )

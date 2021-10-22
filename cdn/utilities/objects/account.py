@@ -10,7 +10,7 @@ from typing import Any
 import pendulum
 
 # My stuff
-from utilities import enums, objects
+from utilities import enums
 
 
 class Account:
@@ -31,9 +31,7 @@ class Account:
         )
 
         self._type: enums.AccountType = enums.AccountType(data["type"])
-
         self._fetched_at: float = data.get("fetched_at", time.time())
-        self._files: dict[str, objects.File] = {}
 
     def __repr__(self) -> str:
         return f"<cdn.Account id={self.id}, username='{self.username}', bot={self.bot}, type={self.type}>"
@@ -84,12 +82,6 @@ class Account:
     #
 
     @property
-    def files(self) -> dict[str, objects.File]:
-        return self._files
-
-    #
-
-    @property
     def partial_info(self) -> dict[str, Any]:
         return {
             "id":         self.id,
@@ -102,4 +94,4 @@ class Account:
 
     @property
     def info(self) -> dict[str, Any]:
-        return self.partial_info | {"token": self.token, "email": self.email, "password": self.password}
+        return self.partial_info | {"token": self.token, "email": self.email, "password": self.password, "avatar": "https://cdn.axelancerr.xyz/EternityInitialPercentDawnBucket.png"}
