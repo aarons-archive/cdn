@@ -2,7 +2,12 @@
 from __future__ import annotations
 
 # Standard Library
-import datetime
+import datetime as dt
+import time
+from typing import Any
+
+# Packages
+import pendulum
 
 # My stuff
 from utilities import enums, objects
@@ -10,7 +15,7 @@ from utilities import enums, objects
 
 class Account:
 
-    def __init__(self, data: dict, /) -> None:
+    def __init__(self, data: dict[str, Any], /) -> None:
 
         self._id: int = data["id"]
         self._username: str = data["username"]
@@ -18,13 +23,20 @@ class Account:
         self._bot: bool = data["bot"]
         self._email: str = data["email"]
         self._password: str = data["password"]
-        self._created_at: datetime.datetime = data.get("created_at")
-        self._type: enums.AccountType = enums.AccountType(data.get("type"))
 
+        _created_at = data["created_at"]
+        self._created_at: pendulum.DateTime = pendulum.instance(
+            _created_at if isinstance(_created_at, dt.datetime) else dt.datetime.fromisoformat(_created_at),
+            tz="UTC"
+        )
+
+        self._type: enums.AccountType = enums.AccountType(data["type"])
+
+        self._fetched_at: float = data.get("fetched_at", time.time())
         self._files: dict[str, objects.File] = {}
 
     def __repr__(self) -> str:
-        return f"<cdn.Account id='{self.id}' username='{self.username}' bot={self.bot}>"
+        return f"<cdn.Account id={self.id}, username='{self.username}', bot={self.bot}, type={self.type}>"
 
     # Properties
 
@@ -53,12 +65,21 @@ class Account:
         return self._password
 
     @property
+    def created_at(self) -> pendulum.DateTime:
+        return self._created_at
+
+    @property
     def type(self) -> enums.AccountType:
         return self._type
 
+    #
+
     @property
-    def created_at(self) -> datetime.datetime:
-        return self._created_at
+    def fetched_at(self) -> float:
+        return self._fetched_at
+
+    def is_expired(self) -> bool:
+        return (time.time() - self.fetched_at) > 10
 
     #
 
@@ -69,14 +90,16 @@ class Account:
     #
 
     @property
-    def partial_info(self) -> dict:
+    def partial_info(self) -> dict[str, Any]:
         return {
-            "id":       self.id,
-            "username": self.username,
-            "bot":      self.bot,
-            "created_at": self.created_at.isoformat()
+            "id":         self.id,
+            "username":   self.username,
+            "bot":        self.bot,
+            "created_at": self.created_at.isoformat(),
+            "type":       self.type.value,
+            "fetched_at": self.fetched_at
         }
 
     @property
-    def info(self) -> dict:
-        return self.partial_info | {"token": self.token, "email": self.email}
+    def info(self) -> dict[str, Any]:
+        return self.partial_info | {"token": self.token, "email": self.email, "password": self.password}

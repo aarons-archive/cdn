@@ -2,44 +2,26 @@
 from __future__ import annotations
 
 # Standard Library
-import datetime
-from typing import TYPE_CHECKING
+from typing import Any
 
-# My stuff
-from utilities import objects
-
-
-if TYPE_CHECKING:
-    # Packages
-    from app import AxelWeb
+# Packages
+import pendulum
 
 
 class File:
 
-    __slots__ = "_app", "_account", "_account_id", "_identifier", "_format", "_created_at"
+    def __init__(self, data: dict[str, Any], /) -> None:
 
-    def __init__(self, app: AxelWeb, account: objects.Account, data: dict) -> None:
-
-        self._app: AxelWeb = app
-        self._account: objects.Account = account
-
-        self._account_id: int = data.get("account_id")
-        self._identifier: str = data.get("identifier")
-        self._format: str = data.get("format")
-        self._created_at: datetime.datetime = data.get("created_at")
+        self._account_id: int = data["account_id"]
+        self._identifier: str = data["identifier"]
+        self._format: str = data["format"]
+        self._created_at: pendulum.DateTime = pendulum.instance(data["created_at"], tz="UTC")
+        self._private: bool = data["private"]
 
     def __repr__(self) -> str:
-        return f"<axelweb.File identifier={self.identifier} format={self.format} account={self.account}>"
+        return f"<cdn.File identifier='{self.identifier}' format='{self.format}' private={self.private}>"
 
     # Properties
-
-    @property
-    def app(self) -> AxelWeb:
-        return self._app
-
-    @property
-    def account(self) -> objects.Account:
-        return self._account
 
     @property
     def account_id(self) -> int:
@@ -54,8 +36,12 @@ class File:
         return self._format
 
     @property
-    def created_at(self) -> datetime.datetime:
+    def created_at(self) -> pendulum.DateTime:
         return self._created_at
+
+    @property
+    def private(self) -> bool:
+        return self._private
 
     #
 
