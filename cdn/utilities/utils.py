@@ -3,6 +3,7 @@ from __future__ import annotations
 
 # Standard Library
 import datetime as dt
+from typing import Any, Literal
 
 # Packages
 import humanize
@@ -79,3 +80,18 @@ def format_seconds(
         return f"{f'{days}d ' if not days == 0 else ''}{f'{hours}h ' if not hours == 0 or not days == 0 else ''}{minutes}m {seconds}s"
 
     return f"{f'{days:02d}:' if not days == 0 else ''}{f'{hours:02d}:' if not hours == 0 or not days == 0 else ''}{minutes:02d}:{seconds:02d}"
+
+
+class _MissingSentinel:
+
+    def __eq__(self, other: Any) -> Literal[False]:
+        return False
+
+    def __bool__(self) -> Literal[False]:
+        return False
+
+    def __repr__(self) -> str:
+        return "..."
+
+
+MISSING: Any = _MissingSentinel()
