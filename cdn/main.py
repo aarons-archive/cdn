@@ -96,10 +96,12 @@ if __name__ == "__main__":
         app = CDN()
 
         endpoints: list[str] = [
+            "index",
+            "api.account.login",
+            "api.account.logout",
             "api.accounts",
             "media",
             "pages",
-            "app"
         ]
         for module in [importlib.import_module(f"endpoints.{endpoint}") for endpoint in endpoints]:
             module.setup(app=app)  # type: ignore

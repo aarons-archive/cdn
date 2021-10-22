@@ -14,21 +14,14 @@ from core.app import CDN
 
 
 @aiohttp_jinja2.template("index.html")  # type: ignore
-async def index(request: aiohttp.web.Request) -> dict[str, Any] | None:
+async def index(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
 
     session = await aiohttp_session.get_session(request)
     app: CDN = request.app  # type: ignore
 
-    user = await app.get_user(session)
-    related_guilds = await app.get_related_guilds(session, user_id=getattr(user, "id", None))
-    stats = await app.ipc.request("stats")
+    account = await app.get_account(session)
 
-    return {
-        **app.links,
-        "user": user.to_dict() if user else None,
-        **related_guilds,
-        **stats
-    }
+    return account.info if account else None
 
 
 def setup(app: aiohttp.web.Application) -> None:

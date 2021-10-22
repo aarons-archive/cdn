@@ -16,7 +16,7 @@
         <div class="card shadow m-1">
             <div class="card-body">
 
-                <form action="/api/login" method="post" accept-charset="utf-8" enctype="application/x-www-form-urlencoded">
+                <form action="/api/account/login" method="post" accept-charset="utf-8" enctype="application/x-www-form-urlencoded">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input id="username" type="text" name="username" placeholder="Username" class="form-control" required>
@@ -35,7 +35,7 @@
         <div class="card shadow m-1">
             <div class="card-body">
                 <p class="card-text">Logged in as {{ username }}, your id is {{ id }}.</p>
-                <form action="/api/logout" method="post" accept-charset="utf-8">
+                <form action="/api/account/logout" method="post" accept-charset="utf-8">
                     <input type="submit" class="btn btn-block" value="Logout">
                 </form>
             </div>

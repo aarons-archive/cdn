@@ -15,7 +15,7 @@ from aiohttp_session import redis_storage
 
 # My stuff
 from core import config
-from utilities import objects
+from utilities import objects, utils
 
 
 __log__: logging.Logger = logging.getLogger("cdn")
@@ -26,7 +26,7 @@ class CDN(aiohttp.web.Application):
     def __init__(self) -> None:
         super().__init__()
 
-        self.db: asyncpg.Pool | None = None
+        self.db: asyncpg.Pool = utils.MISSING
         self.redis: aioredis.Redis | None = None
 
         self.session: aiohttp.ClientSession = aiohttp.ClientSession()
@@ -72,17 +72,22 @@ class CDN(aiohttp.web.Application):
         /
     ) -> objects.Account | None:
 
-        if not (data := await self.db.fetch("SELECT * FROM accounts WHERE token = $1", session.get("token"))):
+        if not (data := await self.db.fetchrow("SELECT * FROM accounts WHERE token = $1", session.get("token"))):
             return None
 
-        session["account"] = data
-        return objects.Account(data)
+        account = objects.Account(data)
+        session["account"] = account.info
+
+        return account
 
     async def get_account(
         self,
         session: aiohttp_session.Session,
         /
     ) -> objects.Account | None:
+
+        if not session.get("token"):
+            return None
 
         if not (data := session.get("account")):
             return await self.fetch_account(session)

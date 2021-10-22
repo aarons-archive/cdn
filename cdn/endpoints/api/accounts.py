@@ -15,16 +15,18 @@ from __future__ import annotations
 # Standard Library
 import binascii
 import os
+from typing import Any
 
 # Packages
 import aiohttp.web
 import asyncpg
+import asyncpg.exceptions
 
 # My stuff
 from utilities import enums, objects, snowflake
 
 
-async def api_accounts_get(request: aiohttp.web.Request):
+async def api_accounts_get(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
 
     if not (authorised_account := request.app.get_account_by_token(request.headers.get("Authorization"))):
         return aiohttp.web.json_response({"error": "'Authorization' header was invalid or not found."}, status=401)
@@ -36,7 +38,7 @@ async def api_accounts_get(request: aiohttp.web.Request):
     return aiohttp.web.json_response(data)
 
 
-async def api_accounts_delete(request: aiohttp.web.Request) -> aiohttp.web.Response:
+async def api_accounts_delete(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
 
     if not (authorised_account := request.app.get_account_by_token(request.headers.get("Authorization"))):
         return aiohttp.web.json_response({"error": "'Authorization' header was invalid or not found."}, status=401)
@@ -51,7 +53,7 @@ async def api_accounts_delete(request: aiohttp.web.Request) -> aiohttp.web.Respo
     return aiohttp.web.Response(status=204)
 
 
-async def api_accounts_post(request: aiohttp.web.Request) -> aiohttp.web.Response:
+async def api_accounts_post(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
 
     if not (authorised_account := request.app.get_account_by_token(request.headers.get("Authorization"))):
         return aiohttp.web.json_response({"error": "'Authorization' header was invalid or not found."}, status=401)
@@ -80,34 +82,35 @@ async def api_accounts_post(request: aiohttp.web.Request) -> aiohttp.web.Respons
                 "INSERT INTO accounts (id, username, token, bot, email, password, type) VALUES ($1, $2, $3, $4, $5, $6, crypt($7, gen_salt($8))) RETURNING *",
                 snowflake.generate_snowflake(1, 1), username, token, body.get("bot", False), email, password, "bf", body.get("type", 0)
         )
-    except asyncpg.UniqueViolationError:
+    except asyncpg.exceptions.UniqueViolationError:
         return aiohttp.web.json_response({"error": f"The email '{email}' is already in use."}, status=400)
 
-    account = objects.Account(app=request.app, data=data)
+    account = objects.Account(data)
     return aiohttp.web.json_response(account.info, status=201)
 
 
-async def api_accounts_list_get(request: aiohttp.web.Request) -> aiohttp.web.Response:
-    pass
+async def api_accounts_list_get(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+    return None
 
 
-async def api_accounts_stats_get(request: aiohttp.web.Request) -> aiohttp.web.Response:
-    pass
+async def api_accounts_stats_get(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+    return None
 
 
-async def api_accounts_purge_post(request: aiohttp.web.Request) -> aiohttp.web.Response:
-    pass
+async def api_accounts_purge_post(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+    return None
 
 
 def setup(app: aiohttp.web.Application) -> None:
 
-    app.add_routes([
-        aiohttp.web.get(r"/api/accounts/{id:\d+}", api_accounts_get),
-        aiohttp.web.delete(r"/api/accounts/{id:\d+}", api_accounts_delete),
+    app.add_routes(
+        [
+            aiohttp.web.get(r"/api/accounts/{id:\d+}", api_accounts_get),  # type: ignore
+            aiohttp.web.delete(r"/api/accounts/{id:\d+}", api_accounts_delete),  # type: ignore
+            aiohttp.web.post(r"/api/accounts", api_accounts_post),  # type: ignore
+            aiohttp.web.get(r"/api/accounts/{id:\d+}/list", api_accounts_list_get),  # type: ignore
+            aiohttp.web.get(r"/api/accounts/{id:\d+}/stats", api_accounts_stats_get),  # type: ignore
+            aiohttp.web.post(r"/api/accounts/{id:\d+}/purge", api_accounts_purge_post),  # type: ignore
 
-        aiohttp.web.post(r"/api/accounts", api_accounts_post),
-
-        aiohttp.web.get(r"/api/accounts/{id:\d+}/list", api_accounts_list_get),
-        aiohttp.web.get(r"/api/accounts/{id:\d+}/stats", api_accounts_stats_get),
-        aiohttp.web.post(r"/api/accounts/{id:\d+}/purge", api_accounts_purge_post),
-    ])
+        ]
+    )
