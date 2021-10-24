@@ -8,6 +8,7 @@ import random
 import string
 
 # Packages
+import aiohttp.multipart
 import aiohttp.web
 
 # My stuff
@@ -29,16 +30,16 @@ async def post(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     reader = await request.multipart()
 
-    if not (data := await reader.next()):
+    if not (field := await reader.next()) or not isinstance(field, aiohttp.multipart.BodyPartReader):
         raise exceptions.JSONResponseError("No multipart data received.", status=400)
 
     identifier = "".join(random.sample(string.ascii_lowercase, 20))
-    format = data.filename.split(".").pop()
+    format = field.filename.split(".").pop() if field.filename else ".unknown"
 
     buffer = io.FileIO(os.path.abspath(os.path.join(os.path.dirname(__file__), f"../../../../../media/{identifier}.{format}")), mode="w")
 
     while True:
-        if not (chunk := await data.read_chunk()):
+        if not (chunk := await field.read_chunk()):
             break
         buffer.write(chunk)
 
