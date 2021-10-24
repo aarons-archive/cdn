@@ -4,7 +4,6 @@ from __future__ import annotations
 # Standard Library
 import asyncio
 import contextlib
-import importlib
 import logging
 import logging.handlers
 import os
@@ -13,8 +12,6 @@ from typing import Any
 
 # Packages
 import aiohttp.web
-import aiohttp_jinja2
-import jinja2
 import setproctitle
 
 # My stuff
@@ -95,35 +92,8 @@ if __name__ == "__main__":
 
         app = CDN()
 
-        endpoints: list[str] = [
-            "index",
-            "media",
-            "login",
-            "logout",
-            "links",
-            "api.accounts.login",
-        ]
-        for module in [importlib.import_module(f"endpoints.{endpoint}") for endpoint in endpoints]:
-            module.setup(app=app)  # type: ignore
-
-        app.add_routes(
-            [
-                aiohttp.web.static(
-                    prefix="/static",
-                    path=os.path.abspath(os.path.join(os.path.dirname(__file__), "static")),
-                    show_index=True,
-                    follow_symlinks=True
-                )
-            ]
-        )
-        app["static_root_url"] = "/static"
-
-        aiohttp_jinja2.setup(
-            app=app,
-            loader=jinja2.FileSystemLoader(
-                searchpath=os.path.abspath(os.path.join(os.path.dirname(__file__), "templates"))
-            )
-        )
+        app.cleanup_ctx.extend([app.asyncpg_connect, app.aioredis_connect])
+        app.on_startup.append(app.start)
 
         aiohttp.web.run_app(
             app=app,
