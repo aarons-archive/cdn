@@ -1,10 +1,8 @@
-
-
 # Future
 from __future__ import annotations
 
 
-class MissingFieldError(Exception):
+class JSONResponseError(Exception):
 
     def __init__(self, message: str, status: int) -> None:
 

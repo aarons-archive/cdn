@@ -1,9 +1,6 @@
 # Future
 from __future__ import annotations
 
-# Standard Library
-from typing import Any
-
 # Packages
 import aiohttp.web
 
@@ -11,11 +8,11 @@ import aiohttp.web
 from core import values
 
 
-async def github(_: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+async def github(_: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.HTTPFound(values.GITHUB_URL)
 
 
-async def discord(_: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+async def discord(_: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.HTTPFound(values.DISCORD_URL)
 
 

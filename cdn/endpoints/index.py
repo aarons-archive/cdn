@@ -14,7 +14,7 @@ from core.app import CDN
 
 
 @aiohttp_jinja2.template("index.html")  # type: ignore
-async def index(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+async def index(request: aiohttp.web.Request) -> dict[str, Any]:
 
     session = await aiohttp_session.get_session(request)
     app: CDN = request.app  # type: ignore
@@ -27,4 +27,8 @@ async def index(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Re
 
 
 def setup(app: aiohttp.web.Application) -> None:
-    app.add_routes([aiohttp.web.get(r"/", index)])  # type: ignore
+    app.add_routes(
+        [
+            aiohttp.web.get(r"/", index),  # type: ignore
+        ]
+    )
