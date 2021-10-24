@@ -19,7 +19,7 @@ async def discord(_: aiohttp.web.Request) -> aiohttp.web.Response:
 def setup(app: aiohttp.web.Application) -> None:
     app.add_routes(
         [
-            aiohttp.web.get(r"/github", github),  # type: ignore
-            aiohttp.web.get(r"/discord", discord),  # type: ignore
+            aiohttp.web.get(r"/app/github", github),  # type: ignore
+            aiohttp.web.get(r"/app/discord", discord),  # type: ignore
         ]
     )

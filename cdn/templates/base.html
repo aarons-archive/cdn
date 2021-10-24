@@ -28,7 +28,7 @@
         <nav class="navbar navbar-dark navbar-expand-md p-3">
             <div class="container g-0 g-md-3">
 
-                <a class="navbar-brand p-0" href="/">
+                <a class="navbar-brand p-0" href="/app">
                     <img class="img-fluid align-text-top d-inline-block" src="{{ static('/images/logo48x30.png') }}" alt="logo">
                 </a>
 
@@ -41,16 +41,16 @@
                                 {{ account.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end mt-2" aria-labelledby="NavbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="/account">Account</a></li>
-                                <li><a class="dropdown-item" href="/media">Media</a></li>
+                                <li><a class="dropdown-item" href="/app/account">Account</a></li>
+                                <li><a class="dropdown-item" href="/app/media">Media</a></li>
                                 <li><hr class="dropdown-divider my-1"></li>
-                                <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                                <li><a class="dropdown-item text-danger" href="/app/logout">Logout</a></li>
                             </ul>
                         </div>
 
                     {% else %}
                         <form>
-                            <button class="btn btn-light" type="submit" formaction="/login">Login</button>
+                            <button class="btn btn-light" type="submit" formaction="/app/login">Login</button>
                         </form>
 
                     {% endif %}
@@ -65,9 +65,9 @@
 
                 <div class="collapse navbar-collapse mt-2" id="NavBar">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/github">Github</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/discord">Discord</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/app">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/app/github">Github</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/app/discord">Discord</a></li>
                     </ul>
                 </div>
 

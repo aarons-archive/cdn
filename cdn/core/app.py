@@ -87,7 +87,7 @@ class CDN(aiohttp.web.Application):
         self.add_routes(
             [
                 aiohttp.web.static(
-                    prefix="/static",
+                    prefix="/app/static",
                     path=os.path.abspath(os.path.join(os.path.dirname(__file__), "../static")),
                     show_index=True,
                     follow_symlinks=True,
@@ -95,7 +95,7 @@ class CDN(aiohttp.web.Application):
                 )
             ]
         )
-        self["static_root_url"] = "/static"
+        self["static_root_url"] = "/app/static"
 
         for module in [importlib.import_module(f"endpoints.{endpoint}") for endpoint in config.ENDPOINTS]:
             module.setup(self)  # type: ignore

@@ -32,7 +32,7 @@ async def login(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Re
         raise exceptions.JSONResponseError("An account with that username and password combination does not exist.", status=403)
 
     session["token"] = account["token"]
-    return aiohttp.web.HTTPFound("/")
+    return aiohttp.web.HTTPFound("/app")
 
 
 def setup(app: aiohttp.web.Application) -> None:

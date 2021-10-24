@@ -29,6 +29,6 @@ async def index(request: aiohttp.web.Request) -> dict[str, Any]:
 def setup(app: aiohttp.web.Application) -> None:
     app.add_routes(
         [
-            aiohttp.web.get(r"/", index),  # type: ignore
+            aiohttp.web.get(r"/app", index),  # type: ignore
         ]
     )

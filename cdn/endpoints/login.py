@@ -16,7 +16,7 @@ async def login(request: aiohttp.web.Request) -> aiohttp.web.Response | dict[str
     session = await aiohttp_session.get_session(request)
 
     if session.get("token"):
-        return aiohttp.web.HTTPFound("/")
+        return aiohttp.web.HTTPFound("/app")
 
     return {}
 
@@ -24,6 +24,6 @@ async def login(request: aiohttp.web.Request) -> aiohttp.web.Response | dict[str
 def setup(app: aiohttp.web.Application) -> None:
     app.add_routes(
         [
-            aiohttp.web.get(r"/login", login),  # type: ignore
+            aiohttp.web.get(r"/app/login", login),  # type: ignore
         ]
     )

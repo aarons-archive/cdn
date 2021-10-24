@@ -31,6 +31,6 @@ async def media(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Re
 def setup(app: aiohttp.web.Application) -> None:
     app.add_routes(
         [
-            aiohttp.web.get(r"/media", media),  # type: ignore
+            aiohttp.web.get(r"/app/media", media),  # type: ignore
         ]
     )
