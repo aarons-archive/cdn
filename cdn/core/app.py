@@ -181,3 +181,16 @@ class CDN(aiohttp.web.Application):
             return None
 
         return [objects.File(file) for file in files]
+
+    async def get_file_owned_by(
+        self,
+        identifier: int,
+        /,
+        *,
+        id: int
+    ) -> objects.File | None:
+
+        if not (file := await self.db.fetchrow("SELECT * FROM files WHERE identifier = $1 AND account_id = $2", identifier, id)):
+            return None
+
+        return objects.File(file)

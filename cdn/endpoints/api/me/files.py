@@ -1,21 +1,15 @@
 # Future
 from __future__ import annotations
 
-# Standard Library
-import io
-import os
-import random
-import string
-
 # Packages
 import aiohttp.web
 
 # My stuff
 from core.app import CDN
-from utilities import exceptions, objects, snowflake, utils
+from utilities import exceptions, objects
 
 
-async def post(request: aiohttp.web.Request) -> aiohttp.web.Response:
+async def get_all(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     app: CDN = request.app  # type: ignore
 
@@ -24,43 +18,7 @@ async def post(request: aiohttp.web.Request) -> aiohttp.web.Response:
     if not (authorised_account := await app.fetch_account_by_token(token)):
         raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
 
-    utils.check_body_is_readable(request.can_read_body)
-    utils.check_content_type(request.content_type, expected="multipart/form-data")
-
-    reader = await request.multipart()
-
-    if not (data := await reader.next()):
-        raise exceptions.JSONResponseError("No multipart data received.", status=400)
-
-    identifier = "".join(random.sample(string.ascii_lowercase, 20))
-    format = data.filename.split(".").pop()
-
-    buffer = io.FileIO(os.path.abspath(os.path.join(os.path.dirname(__file__), f"../../../media/{identifier}.{format}")), mode="w")
-
-    while True:
-        if not (chunk := await data.read_chunk()):
-            break
-        buffer.write(chunk)
-
-    buffer.close()
-
-    data = await app.db.fetchrow(
-        "INSERT INTO files (id, account_id, identifier, format, private) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        snowflake.generate_snowflake(), authorised_account.id, identifier, format, False
-    )
-
-    file = objects.File(data)
-    return aiohttp.web.json_response(file.info, status=201)
-
-
-async def get_all(request: aiohttp.web.Request) -> aiohttp.web.Response:
-
-    app: CDN = request.app  # type: ignore
-
-    if not (account := await app.fetch_account_by_token(request.headers.get("Authorization"))):
-        return aiohttp.web.json_response({"error": "'Authorization' header was invalid or not found."}, status=401)
-
-    files = await app.db.fetch("SELECT * FROM files WHERE account_id = $1", account.id)
+    files = await app.db.fetch("SELECT * FROM files WHERE account_id = $1", authorised_account.id)
     return aiohttp.web.json_response({"files": {file.identifier: file.info for file in [objects.File(data) for data in files]}})
 
 
@@ -68,39 +26,63 @@ async def get_one(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     app: CDN = request.app  # type: ignore
 
-    if not (account := await app.fetch_account_by_token(request.headers.get("Authorization"))):
-        return aiohttp.web.json_response({"error": "'Authorization' header was invalid or not found."}, status=401)
+    if not (token := request.headers.get("Authorization")):
+        raise exceptions.JSONResponseError("'Authorization' header token is missing.", status=400)
+    if not (authorised_account := await app.fetch_account_by_token(token)):
+        raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
 
     identifier = request.match_info["identifier"]
 
-    if not (data := await app.db.fetchrow("SELECT * FROM files WHERE account_id = $1 AND identifier = $2", account.id, identifier)):
-        return aiohttp.web.json_response({"error": f"file with identifier '{identifier}' was not found."}, status=404)
+    if not (file := await app.get_file_owned_by(identifier, id=authorised_account.id)):
+        return aiohttp.web.json_response({"error": f"you do not have a file with the identifier '{identifier}'."}, status=404)
 
-    return aiohttp.web.json_response(objects.File(data).info)
+    return aiohttp.web.json_response(file.info)
+
+
+async def patch(request: aiohttp.web.Request) -> aiohttp.web.Response:
+
+    app: CDN = request.app  # type: ignore
+
+    if not (token := request.headers.get("Authorization")):
+        raise exceptions.JSONResponseError("'Authorization' header token is missing.", status=400)
+    if not (authorised_account := await app.fetch_account_by_token(token)):
+        raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
+
+    identifier = request.match_info["identifier"]
+
+    if not (file := await app.get_file_owned_by(identifier, id=authorised_account.id)):
+        return aiohttp.web.json_response({"error": f"you do not have a file with the identifier '{identifier}'."}, status=404)
+
+    # TODO: File editing options here.
+    return aiohttp.web.json_response(file.info)
 
 
 async def delete(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     app: CDN = request.app  # type: ignore
 
-    if not (account := await app.fetch_account_by_token(request.headers.get("Authorization"))):
-        return aiohttp.web.json_response({"error": "'Authorization' header was invalid or not found."}, status=401)
+    if not (token := request.headers.get("Authorization")):
+        raise exceptions.JSONResponseError("'Authorization' header token is missing.", status=400)
+    if not (authorised_account := await app.fetch_account_by_token(token)):
+        raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
 
     identifier = request.match_info["identifier"]
 
-    if not await app.db.fetchrow("SELECT * FROM files WHERE account_id = $1 AND identifier = $2", account.id, identifier):
-        return aiohttp.web.json_response({"error": f"file with identifier '{identifier}' was not found."}, status=404)
+    if not await app.get_file_owned_by(identifier, id=authorised_account.id):
+        return aiohttp.web.json_response({"error": f"you do not have a file with the identifier '{identifier}'."}, status=404)
 
-    await app.db.execute("DELETE FROM files WHERE account_id = $1 and identifier = $2", account.id, identifier)
+    # TODO: Probably add some kind of additional check? idk
+    await app.db.execute("DELETE FROM files WHERE identifier = $1 AND account_id = $2", identifier, authorised_account.id)
+
     return aiohttp.web.json_response(status=204)
 
 
 def setup(app: aiohttp.web.Application) -> None:
     app.add_routes(
         [
-            aiohttp.web.post(r"/api/v1/me/files", post),
             aiohttp.web.get(r"/api/v1/me/files", get_all),
             aiohttp.web.get(r"/api/v1/me/files/{identifier:\w+}", get_one),
+            aiohttp.web.patch(r"/api/v1/me/files/{identifier:\w+}", patch),
             aiohttp.web.delete(r"/api/v1/me/files/{identifier:\w+}", delete),
         ]
     )
