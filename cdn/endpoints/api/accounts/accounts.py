@@ -23,6 +23,7 @@ async def post(request: aiohttp.web.Request) -> aiohttp.web.Response:
         raise exceptions.JSONResponseError("'Authorization' header token is missing.", status=400)
     if not (authorised_account := await app.fetch_account_by_token(token)):
         raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
+
     if authorised_account.type is not enums.AccountType.OWNER:
         raise exceptions.JSONResponseError("You do not have permission to create accounts.", status=403)
 
@@ -64,9 +65,31 @@ async def get(request: aiohttp.web.Request) -> aiohttp.web.Response:
         raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
 
     id = request.match_info["id"]
+
     if not (account := await app.fetch_account_by_id(id)):
         raise exceptions.JSONResponseError(f"account with id {id} does not exist.", status=401)
 
+    return aiohttp.web.json_response(account.partial_info)
+
+
+async def patch(request: aiohttp.web.Request) -> aiohttp.web.Response:
+
+    app: CDN = request.app  # type: ignore
+
+    if not (token := request.headers.get("Authorization")):
+        raise exceptions.JSONResponseError("'Authorization' header token is missing.", status=400)
+    if not (authorised_account := await app.fetch_account_by_token(token)):
+        raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
+
+    if authorised_account.type is not enums.AccountType.OWNER:
+        raise exceptions.JSONResponseError("You do not have permission to edit accounts.", status=403)
+
+    id = request.match_info["id"]
+
+    if not (account := await app.fetch_account_by_id(id)):
+        raise exceptions.JSONResponseError(f"account with id {id} does not exist.", status=401)
+
+    # TODO: File editing options here.
     return aiohttp.web.json_response(account.partial_info)
 
 
@@ -78,14 +101,18 @@ async def delete(request: aiohttp.web.Request) -> aiohttp.web.Response:
         raise exceptions.JSONResponseError("'Authorization' header token is missing.", status=400)
     if not (authorised_account := await app.fetch_account_by_token(token)):
         raise exceptions.JSONResponseError("'Authorization' header token is invalid or has expired.", status=401)
+
     if authorised_account.type is not enums.AccountType.OWNER:
         raise exceptions.JSONResponseError("You do not have permission to delete accounts.", status=403)
 
     id = request.match_info["id"]
+
     if not (account := await app.fetch_account_by_id(id)):
         raise exceptions.JSONResponseError(f"account with id {id} does not exist.", status=401)
 
+    # TODO: Probably add some kind of additional check? idk
     await app.db.execute("DELETE FROM accounts WHERE id = $1", account.id)
+
     return aiohttp.web.json_response(status=204)
 
 
@@ -94,6 +121,7 @@ def setup(app: aiohttp.web.Application) -> None:
         [
             aiohttp.web.post(r"/api/v1/accounts", post),
             aiohttp.web.get(r"/api/v1/accounts/{id:\w+}", get),
+            aiohttp.web.patch(r"/api/v1/accounts/{id:\w+}", patch),
             aiohttp.web.delete(r"/api/v1/accounts/{id:\w+}", delete),
         ]
     )
