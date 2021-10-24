@@ -51,11 +51,7 @@ async def post(request: aiohttp.web.Request) -> aiohttp.web.Response:
         raise exceptions.JSONResponseError(f"{column} '{value}' is already in-use", status=400)
 
     account = objects.Account(data)
-
-    return aiohttp.web.json_response(
-        account.info,
-        status=201
-    )
+    return aiohttp.web.json_response(account.info, status=201)
 
 
 async def get(request: aiohttp.web.Request) -> aiohttp.web.Response:

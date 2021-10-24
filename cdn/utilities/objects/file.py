@@ -4,24 +4,25 @@ from __future__ import annotations
 # Standard Library
 from typing import Any
 
-# Packages
-import pendulum
-
 
 class File:
 
     def __init__(self, data: dict[str, Any], /) -> None:
 
+        self._id: id = data["id"]
         self._account_id: int = data["account_id"]
         self._identifier: str = data["identifier"]
         self._format: str = data["format"]
-        self._created_at: pendulum.DateTime = pendulum.instance(data["created_at"], tz="UTC")
         self._private: bool = data["private"]
 
     def __repr__(self) -> str:
-        return f"<cdn.File identifier='{self.identifier}' format='{self.format}' private={self.private}>"
+        return f"<cdn.File identifier={self.identifier}, format={self.format}>"
 
     # Properties
+
+    @property
+    def id(self) -> int:
+        return self._id
 
     @property
     def account_id(self) -> int:
@@ -34,10 +35,6 @@ class File:
     @property
     def format(self) -> str:
         return self._format
-
-    @property
-    def created_at(self) -> pendulum.DateTime:
-        return self._created_at
 
     @property
     def private(self) -> bool:
@@ -53,11 +50,12 @@ class File:
 
     @property
     def info(self) -> dict[str, Any]:
+
         return {
+            "id":         self.id,
             "account_id": self.account_id,
             "identifier": self.identifier,
             "format":     self.format,
-            "created_at": self.created_at.isoformat(),
             "private":    self.private,
             "filename":   self.filename
         }
