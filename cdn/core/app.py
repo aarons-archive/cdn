@@ -5,7 +5,7 @@ from __future__ import annotations
 import importlib
 import logging
 import os
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable
 
 # Packages
 import aiohttp
@@ -36,11 +36,11 @@ class CDN(aiohttp.web.Application):
 
     # Cleanup context
 
-    async def asyncpg_connect(self, _: aiohttp.web.Application) -> None:
+    async def asyncpg_connect(self, _: aiohttp.web.Application) -> AsyncGenerator[None, None]:
 
         try:
             __log__.debug("[POSTGRESQL] Attempting connection.")
-            db = await asyncpg.create_pool(**config.POSTGRESQL, max_inactive_connection_lifetime=0)
+            db: asyncpg.Pool = await asyncpg.create_pool(**config.POSTGRESQL, max_inactive_connection_lifetime=0)  # type: ignore
         except Exception as e:
             __log__.critical(f"[POSTGRESQL] Error while connecting.\n{e}\n")
             raise ConnectionError()
@@ -53,7 +53,7 @@ class CDN(aiohttp.web.Application):
         __log__.info("[POSTGRESQL] Closing connection.")
         await self.db.close()
 
-    async def aioredis_connect(self, _: aiohttp.web.Application) -> None:
+    async def aioredis_connect(self, _: aiohttp.web.Application) -> AsyncGenerator[None, None]:
 
         try:
             __log__.debug("[REDIS] Attempting connection.")
@@ -184,7 +184,7 @@ class CDN(aiohttp.web.Application):
 
     async def get_file_owned_by(
         self,
-        identifier: int,
+        identifier: str,
         /,
         *,
         id: int

@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
         app = CDN()
 
-        app.cleanup_ctx.extend([app.asyncpg_connect, app.aioredis_connect])  # type: ignore
+        app.cleanup_ctx.extend([app.asyncpg_connect, app.aioredis_connect])
         app.on_startup.append(app.start)
 
         aiohttp.web.run_app(
