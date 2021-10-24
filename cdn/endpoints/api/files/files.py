@@ -35,7 +35,7 @@ async def post(request: aiohttp.web.Request) -> aiohttp.web.Response:
     identifier = "".join(random.sample(string.ascii_lowercase, 20))
     format = data.filename.split(".").pop()
 
-    buffer = io.FileIO(os.path.abspath(os.path.join(os.path.dirname(__file__), f"../../../media/{identifier}.{format}")), mode="w")
+    buffer = io.FileIO(os.path.abspath(os.path.join(os.path.dirname(__file__), f"../../../../../media/{identifier}.{format}")), mode="w")
 
     while True:
         if not (chunk := await data.read_chunk()):
