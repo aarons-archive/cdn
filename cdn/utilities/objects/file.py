@@ -9,7 +9,7 @@ class File:
 
     def __init__(self, data: dict[str, Any], /) -> None:
 
-        self._id: id = data["id"]
+        self._id: int = data["id"]
         self._account_id: int = data["account_id"]
         self._identifier: str = data["identifier"]
         self._format: str = data["format"]

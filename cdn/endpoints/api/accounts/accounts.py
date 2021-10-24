@@ -66,7 +66,7 @@ async def get(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     id = request.match_info["id"]
 
-    if not (account := await app.fetch_account_by_id(id)):
+    if not (account := await app.fetch_account_by_id(int(id))):
         raise exceptions.JSONResponseError(f"account with id {id} does not exist.", status=401)
 
     return aiohttp.web.json_response(account.partial_info)
@@ -86,7 +86,7 @@ async def patch(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     id = request.match_info["id"]
 
-    if not (account := await app.fetch_account_by_id(id)):
+    if not (account := await app.fetch_account_by_id(int(id))):
         raise exceptions.JSONResponseError(f"account with id {id} does not exist.", status=401)
 
     # TODO: File editing options here.
@@ -107,7 +107,7 @@ async def delete(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     id = request.match_info["id"]
 
-    if not (account := await app.fetch_account_by_id(id)):
+    if not (account := await app.fetch_account_by_id(int(id))):
         raise exceptions.JSONResponseError(f"account with id {id} does not exist.", status=401)
 
     # TODO: Probably add some kind of additional check? idk
@@ -120,8 +120,8 @@ def setup(app: aiohttp.web.Application) -> None:
     app.add_routes(
         [
             aiohttp.web.post(r"/api/v1/accounts", post),
-            aiohttp.web.get(r"/api/v1/accounts/{id:\w+}", get),
-            aiohttp.web.patch(r"/api/v1/accounts/{id:\w+}", patch),
-            aiohttp.web.delete(r"/api/v1/accounts/{id:\w+}", delete),
+            aiohttp.web.get(r"/api/v1/accounts/{id:\d+}", get),
+            aiohttp.web.patch(r"/api/v1/accounts/{id:\d+}", patch),
+            aiohttp.web.delete(r"/api/v1/accounts/{id:\d+}", delete),
         ]
     )

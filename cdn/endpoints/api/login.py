@@ -13,7 +13,7 @@ from core.app import CDN
 from utilities import exceptions, utils
 
 
-async def login(request: aiohttp.web.Request) -> dict[str, Any] | aiohttp.web.Response | None:
+async def login(request: aiohttp.web.Request) -> aiohttp.web.Response:
 
     session = await aiohttp_session.new_session(request)
     app: CDN = request.app  # type: ignore

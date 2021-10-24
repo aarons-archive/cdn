@@ -85,7 +85,7 @@ UNIQUE_VIOLATION_ERROR_REGEX: re.Pattern[str] = re.compile(r"Key \((?P<column>.+
 
 def get_unique_violation_error_details(error: asyncpg.exceptions.UniqueViolationError, /) -> Sequence[str]:
 
-    if match := re.match(UNIQUE_VIOLATION_ERROR_REGEX, error.detail):
+    if match := re.match(UNIQUE_VIOLATION_ERROR_REGEX, error.detail):  # type: ignore
         return match.groups()
 
     raise exceptions.JSONResponseError(
