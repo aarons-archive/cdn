@@ -15,7 +15,7 @@ import aiohttp.web
 import setproctitle
 
 # My stuff
-from core import config
+from core import config, contexts, middlewares, signals
 from core.app import CDN
 
 
@@ -92,8 +92,9 @@ if __name__ == "__main__":
 
         app = CDN()
 
-        app.cleanup_ctx.extend([app.asyncpg_connect, app.aioredis_connect])
-        app.on_startup.append(app.start)
+        middlewares.setup(app)
+        contexts.setup(app)
+        signals.setup(app)
 
         aiohttp.web.run_app(
             app=app,
