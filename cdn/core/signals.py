@@ -30,7 +30,17 @@ async def start(app: aiohttp.web.Application) -> None:
         loader=jinja2.FileSystemLoader(searchpath=os.path.abspath(os.path.join(os.path.dirname(__file__), "../templates")))
     )
 
-    app.add_routes([aiohttp.web.static(prefix="/app/static", path=os.path.abspath(os.path.join(os.path.dirname(__file__), "../static")))])
+    app.add_routes(
+        [
+            aiohttp.web.static(
+                prefix="/app/static",
+                path=os.path.abspath(os.path.join(os.path.dirname(__file__), "../static")),
+                show_index=True,
+                follow_symlinks=True,
+                append_version=True,
+            )
+        ]
+    )
     app["static_root_url"] = "/app/static"
 
     for module in [importlib.import_module(f"endpoints.{endpoint}") for endpoint in config.ENDPOINTS]:
