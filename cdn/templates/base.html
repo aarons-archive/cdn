@@ -25,11 +25,11 @@
 
     <body>
 
-        <nav class="navbar navbar-dark navbar-expand-md p-3">
-            <div class="container g-0 g-md-3">
+        <nav class="navbar navbar-dark navbar-expand-md px-2 py-3">
+            <div class="container px-2">
 
                 <a class="navbar-brand p-0" href="/app">
-                    <img class="img-fluid align-text-top d-inline-block" src="{{ static('/images/logo48x30.png') }}" alt="logo">
+                    <img class="img-fluid align-text-top d-inline-block invert" src="{{ static('/images/logo48x30.png') }}" alt="logo">
                 </a>
 
                 <div class="btn-group">
@@ -37,14 +37,14 @@
                     {% if account %}
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-light p-0 mx-2" href="#" id="NavbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
-                                <img class="img-fluid rounded-circle me-2" src="{{ account.avatar }}" alt="logo" width="30px">
+                                <img class="img-fluid rounded-circle me-1" src="{{ account.avatar }}" alt="avatar" width="30px">
                                 {{ account.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end mt-2" aria-labelledby="NavbarDropdownMenuLink">
                                 <li><a class="dropdown-item" href="/app/account">Account</a></li>
                                 <li><a class="dropdown-item" href="/app/media">Media</a></li>
-                                <li><hr class="dropdown-divider my-1"></li>
-                                <li><a class="dropdown-item text-danger" href="/app/logout">Logout</a></li>
+                                <li><hr class="dropdown-divider my-1" style="height: 2px;"></li>
+                                <li><a class="dropdown-item text-danger fw-bold" href="/app/logout">Logout</a></li>
                             </ul>
                         </div>
 
@@ -63,7 +63,7 @@
 
                 </div>
 
-                <div class="collapse navbar-collapse mt-2" id="NavBar">
+                <div class="collapse navbar-collapse" id="NavBar">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="/app">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="/app/github">Github</a></li>
